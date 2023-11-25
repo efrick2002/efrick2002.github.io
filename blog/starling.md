@@ -15,13 +15,39 @@ We introduce Starling-7B, an open-source chatbot model trained by RLAIF with our
 
 ## Overview
 
-Supervised fine-tuning (SFT) has seen great success in training language models as chatbot systems, especially with high quality data distilled from ChatGPT / GPT 4 (see e.g. Alpaca, Vicuna, OpenHermes 2.5, Openchat 3.5). However, it remains unclear how much gain RLHF can bring when scaling high-quality preference data. Initial attempt in open source community applies Direct Policy Optimization (DPO) to get models like Zephyra-7B, Neural-Chat-7B or Tulu-70B. However, from the score in MT Bench and Chatbot arena,  compared with the best SFT model like OpenHermes 2.5, Openchat 3.5, their performance is still incapable of demonstrating the power of RLHF.
+Supervised fine-tuning (SFT) has seen great success in training language models as chatbot systems, especially with high quality data distilled from ChatGPT / GPT 4 (see e.g. Alpaca, Vicuna, OpenHermes 2.5, Openchat 3.5). However, it remains unclear how much gain RLHF can bring when scaling high-quality preference data. Initial attempt in open source community applies Direct Policy Optimization (DPO) to get models like Zephyra-7B, Neural-Chat-7B or Tulu-70B. But from the score in MT Bench and Chatbot arena,  compared with the best SFT model like OpenHermes 2.5, Openchat 3.5, their performance is still incapable of demonstrating the power of RLHF.
 
 To faciliate rigorous research on RLHF, one needs a ranking dataset that is as high quality as the existing best SFT dataset. We release Nectar, a GPT-4 labeled ranking dataset composed of 183K chat prompts, with 7 responses each from GPT-4, GPT-3.5-instruct, GPT-3.5, Mistral-7B-Instruct, Llama2-7B and other models, resulting in total 3.8M pairwise comparisons. We spent a good amount of prompting efforts to remove the positional bias when asking GPT-4 to provide ranking for 7 responses. The details are provided in the dataset section below.
 
 Furthermore, to the best of our knowledge, there are not too many choices of open-source reward models. We also open source our reward model trained with our proposed K-wise loss from the Nectar dataset. We hope this reward model can help people better understand the RLHF mechanism, and potentially benefit the AI safety research.
 
 Lastly, we fine-tune the existing language model Openchat-3.5 based on the learned reward model. We observe that the MT-Bench score improves from 7.81 to 8.09, and the AlpacaEval score improves from 88.51% to 91.99%. Both datasets are designed to measure the chat experience in helpfulness. We also observe slight regression in the model's general capability, potentially due to slight overfitting. We are actively testing different methodologies for training the reward model and language model, and will keep updating the blog and our released models. 
+
+
+
+##  Evaluation of the Model
+
+Evaluating chatbots is never a simple task. We mainly evaluate the helpfulness of our models based on MT-Bench and AlpacaEval, which are GPT-4-based comparisons. The results are listed below.
+
+| Model                 | Tuning Method    | MT Bench | AlpacaEval |
+|-----------------------|------------------|----------|------------|
+| gpt4_turbo            | ?                | 9.32     | 97.70      |
+| gpt4                  | SFT + PPO        | 8.99     | 95.28      |
+| Starling-7B           | C-RLFT + APA     | 8.09     | 91.99      |
+| claude-2              | ?                | 8.06     | 91.36      |
+| GPT-3.5               | ?                | 7.94     | 89.37      |
+| claude-1              | ?                | 7.9      | 88.39      |
+| tulu-2-dpo-70b        | SFT + DPO        | 7.89     | 95.1       |
+| Openchat-3.5          | C-RLFT           | 7.81     | 88.51      |
+| Zephyr-7B-beta        | SFT + DPO        | 7.34     | 90.60      |
+| llama-2-70b-chat-hf   | SFT + PPO        | 6.86     | 92.66      |
+| neural-chat-7b-v3-1   | SFT + DPO        | 6.84     | 84.53      |
+| Tulu-2-dpo-7b         | SFT + DPO        | 6.29     | 85.1       |
+
+
+We also put our model anonymously on Chatbot Arena, where we test the human preferences. The result is XXX (waiting for Chatbot Arena scores in 1 week.)
+
+Similar to the observations in GPT-4 report, we also noticed that after RLHF, the helpfulness and safety of the model improves while the other capabilities do not change too much. We also observe a similar phenomenon that after initial RLHF, the model can be unnecessarily safe towards some non-malicious prompts, and can still be unsafe to jailbreaking prompts. We also want to point out that due to Goodharting law, the model being preferred by GPT-4 may not indicate that it is more preferred by human than any model whose MT-Bench score is lower. The model is also limited due to its main capability, including basic knowledge, reasoning, coding and mathematics, and RLHF only improves its helpfulness and harmlessness, which is reflected in MT-Bench and AlpacaEval. However, we believe the result suggests the possibility of scaling online RL methods with massive preference data -- when the ground truth is GPT-4 preference, it is possible to imporove over the best existing models. If one changes the preference data with high-quality human responses, it's likely to improve human preferences as well. 
 
 
 ## Dataset
@@ -33,6 +59,8 @@ We provide the first high-quality 7-wise comparison dataset generated by GPT-4-b
 
 The most difficult part is the positional bias in GPT-4-based ranking. We plot the probability of being picked as the top response for all positions in the ranking prompt.  As we show in the first figure below, when we simply ask GPT-4 to rank the responses without additional reasoning, GPT-4 prefers the responses in the first and second place much more than responses in the last two positions. In the second figure, we explicitly ask GPT-4 to first provide pairwise comparisons for all pairs, and then summarize with 7-wise ranking. We find that helps mitigate the positional bias a bit. We have also tried asking GPT-4 to provide scores or judgement for each individual prompt, and then summarize with 7-wise ranking. Unfortunately, this does not help with reducing positional bias. In the third figure, we provide a specific tie breaking order and find that it helps further reduce the positional bias. In the last figure, we enforce a randomized tie breaking order. We find this helps the most in terms of reducing positional bias. This gives the final prompt we use for curating the dataset Nectar.
 
+We hope this dataset can help developers train better models with RLHF, and help researchers develop better understanding in RLHF, along with the relationship between synthetic data and human data.
+
 ## RLHF / RLAIF
 
 After getting the Nectar dataset, we use it to train a reward model and conduct online RL based on that. We provide the detailed process as below. 
@@ -42,149 +70,25 @@ After getting the Nectar dataset, we use it to train a reward model and conduct 
 
 Our reward model is trained with the K-wise maximum likelihood estimator under Plackett-Luce Model, as is shown in the [prior paper [1]]{https://arxiv.org/abs/2301.11270}. We observe that for 7-wise comparisons, the new estimator gives better reward model than the original loss proposed for training reward model, which first splits the comparisons into pairwise, and then minimizes the cross entropy loss for pairwise comparisons. We are actively experimenting with new loss functions for training a better reward model. 
 
-For policy-finetuning, we select the initial model Openchat 3.5, since the model has the highest MT Bench score (7.81) among all existing models. It will be more convincing if RLHF can further improve the score in MT Bench. We find that existing online RL methods all give similarly good performances. We have also tried offline-RL methods including [Direct Preference Optimization (DPO)]{https://arxiv.org/abs/2305.18290}. However, there is no strong evidence yet showing that it can bring substantial improvement over the SFT model Openchat 3.5, potentially due to that Openchat 3.5 is already fine-tuned with offline RL, and the performance of offline RL is usually the best covered demonstration policy.
+For policy-finetuning, we select the initial model Openchat 3.5, since the model has the highest MT Bench score (7.81) among all existing models. It will be more convincing if RLHF can further improve the score in MT Bench. We tested three online RL methods, Advantage-induced Policy Alignment (APA), Proximal Policy Optimization (PPO) and Pairwise Proximal Policy Optimization (P3O). In general, the search of optimal hyperpamameters for PPO can be hard. But when optimized with god hyperparameters, we find that existing online RL methods give similarly good performances. We select the final checkpoint from an APA run. We have also tried offline-RL methods including [Direct Preference Optimization (DPO)]{https://arxiv.org/abs/2305.18290}. However, there is no strong evidence yet showing that it can bring substantial improvement over the SFT model Openchat 3.5, potentially due to that Openchat 3.5 is already fine-tuned with offline RL, and the performance of offline RL is usually the best covered demonstration policy. In the future, we envision a better language model fine-tuning procedure being using (conditional) offline RL including DPO or C-RLFT to leverage reward information to create a strong initial model, and further improve the helpfulness and harmlessness with reward training and online RL. 
 
-During the process, we find that compared with the policy tuning method, the quality of the reward model plays a more important role. We call for new and most robust reward learning methods and encourage researchers to train and test the reward model on our dataset. 
+During the process, we find that compared with the policy tuning method, the quality of the reward model plays a more important role. We call for new and most robust reward learning methods and encourage researchers to train and test the reward model on our dataset. We believe it's likely that the dataset can bring higher gain with a larger reward model and language model.
 
 
 ### Evaluation of RLHF
 
-Evaluating the performance of RLHF algorithms can be hard, especially when it becomes less clear whether the performance gain comes from imitating the best demonstration (GPT-4) responses or extrapolating to better responses. We believe the main benefit of RLHF is to further improve the performance when learning from demonstration data cannot further boost the performance. Thus we encourage researchers to test out their RLHF algorithms on our dataset and start with the best existing model that learns from demonstrations (e.g. Openchat 3.5). The best testbench is to produce strong models that go beyond demonstration data. In the future, we envision a better language model fine-tuning procedure being using (conditional) offline RL including DPO or C-RLFT to leverage reward information to create a strong initial model, and further improve the helpfulness and harmlessness with reward training and online RL. 
+Evaluating the performance of RLHF algorithms can be hard, especially when it becomes less clear whether the performance gain comes from imitating the best demonstration (GPT-4) responses or extrapolating to better responses. We believe the main benefit of RLHF is to further improve the performance when learning from demonstration data cannot further boost the performance. Thus we encourage researchers to test out their RLHF algorithms on our dataset and start with the best existing model that learns from demonstrations (e.g. Openchat 3.5). The best testbench is to produce strong models that go beyond demonstration data. 
 
-##  Evaluation of the Model
-
-Evaluating chatbots is never a simple task. We mainly evaluate the helpfulness of our models based on MT-Bench and AlpacaEval, which are GPT-4-based responses.
-
-
-We also put our model anonymously on Chatbot Arena, where we test the human preferences. The result is XXX (waiting for Chatbot Arena scores in 1 week.)
-
-Similar to the observations in GPT-4 report, we also noticed that after RLHF, the helpfulness and safety of the model improves while the other capabilities do not change too much. We also observe a similar phenomenon that after initial RLHF, the model can be unnecessarily safe towards some non-malicious prompts, and can still be unsafe to jailbreaking prompts. 
-
-
-
-However, evaluating chatbots is never a simple task. 
-With recent advancements in GPT-4, we are curious whether its capabilities have reached a human-like level that could enable an automated evaluation framework for benchmark generation and performance assessments. 
-Our initial finding indicates that GPT-4 can produce highly consistent ranks and detailed assessment when comparing chatbots’ answers (see above example of GPT-4 judgment).
-Preliminary evaluations based on GPT-4, summarized in Figure 1, show that Vicuna achieves 90%<sup>*</sup> capability of Bard/ChatGPT. 
-While this proposed framework shows a potential to automate chatbot assessment, **it is not yet a rigorous approach**. 
-Building an evaluation system for chatbots remains an open question requiring further research. More details are provided in the evaluation section.
-
-<img src="/images/blog/vicuna/chart.svg" style="display:block; margin-top: auto; margin-left: auto; margin-right: auto; margin-bottom: auto; width: 60%"></img>
-<p style="color:gray; text-align: center;">Figure 1. Relative Response Quality Assessed by GPT-4*</p>
-
-<img src="/images/blog/vicuna/overview.png" style="display:block; margin-top: auto; margin-left: auto; margin-right: auto; margin-bottom: auto; width: 70%"></img>
-<p style="color:gray; text-align: center;">Figure 2. Workflow Overview</p>
-
-Figure 2 provides an overview of our work. To begin, we collected around 70K conversations from ShareGPT.com, a website where users can share their ChatGPT conversations. Next, we enhanced the training scripts provided by Alpaca to better handle multi-turn conversations and long sequences. The training was done with PyTorch FSDP on 8 A100 GPUs in one day. For serving the demo, we implemented a lightweight distributed serving system. We conducted a preliminary evaluation of the model quality by creating a set of 80 diverse questions and utilizing GPT-4 to judge the model outputs. To compare two different models, we combine the outputs from each model into a single prompt for each question. The prompts are then sent to GPT-4, which assesses which model provides better responses. A detailed comparison of LLaMA, Alpaca, ChatGPT, and Vicuna is shown in Table 1 below.
-
-
-<p style="color:gray; text-align: center;">Table 1. Comparison between several notable models</p>
-
-<table class="tg" style="display: flex;justify-content: center;">
-<tbody>
-  <tr>
-    <td class="tg-head"><span style="font-weight:bold;">Model Name</span></td>
-    <td class="tg-head"><span style="font-weight:bold;">LLaMA</span></td>
-    <td class="tg-head"><span style="font-weight:bold;">Alpaca</span></td>
-    <td class="tg-head"><span style="font-weight:bold;">Vicuna</span></td>
-    <td class="tg-head"><span style="font-weight:bold;">Bard/ChatGPT</span></td>
-  </tr>
-  <tr>
-    <td class="tg-body">Dataset</td>
-    <td class="tg-body">Publicly available datasets<br>(1T token)</td>
-    <td class="tg-body">Self-instruct from davinci-003 API<br>(52K samples)</td>
-    <td class="tg-body">User-shared conversations<br>(70K samples)</td>
-    <td class="tg-body">N/A</td>
-  </tr>
-  <tr>
-    <td class="tg-body">Training code</td>
-    <td class="tg-body">N/A</td>
-    <td class="tg-body">Available</td>
-    <td class="tg-body">Available</td>
-    <td class="tg-body">N/A</td>
-  </tr>
-  <tr>
-    <td class="tg-body">Evaluation metrics</td>
-    <td class="tg-body">Academic benchmark</td>
-    <td class="tg-body">Author evaluation</td>
-    <td class="tg-body">GPT-4 assessment</td>
-    <td class="tg-body">Mixed</td>
-  </tr>
-  <tr>
-    <td class="tg-body">Training cost<br>(7B)</td>
-    <td class="tg-body">82K GPU-hours</td>
-    <td class="tg-body">$500 (data) + $100 (training)</td>
-    <td class="tg-body">$140 (training)</td>
-    <td class="tg-body">N/A</td>
-  </tr>
-  <tr>
-    <td class="tg-body">Training cost<br>(13B)</td>
-    <td class="tg-body">135K GPU-hours</td>
-    <td class="tg-body">N/A</td>
-    <td class="tg-body">$300 (training)</td>
-    <td class="tg-body">N/A</td>
-  </tr>
-</tbody>
-</table>
-
-
-Evaluating AI chatbots is a challenging task, as it requires examining language understanding, reasoning, and context awareness. With AI chatbots becoming more advanced, current open benchmarks may no longer suffice. For instance, the evaluation dataset used in Stanford’s Alpaca, [self-instruct](https://github.com/yizhongw/self-instruct/tree/main/human_eval), can be effectively answered by SOTA chatbots, making it difficult for humans to discern differences in performance. More limitations include training/test data contamination and the potentially high cost of creating new benchmarks. To tackle these issues, we propose an evaluation framework based on GPT-4 to automate chatbot performance assessment.
-
-First, we devised eight question categories, such as Fermi problems, roleplay scenarios, and coding/math tasks, to test various aspects of a chatbot's performance. Through careful prompt engineering, GPT-4 is able to generate diverse, challenging questions that baseline models struggle with. We select ten questions per category and collect answers from five chatbots: LLaMA, Alpaca, ChatGPT, Bard, and Vicuna. We then ask GPT-4 to rate the quality of their answers based on helpfulness, relevance, accuracy, and detail. We discover that GPT-4 can produce not only relatively consistent scores but also detailed explanations on why such scores are given (detailed examples [link](https://lmsys.org/vicuna_eval/)). However, we also notice that GPT-4 is not very good at judging coding/math tasks.
-
-<img src="/images/blog/vicuna/response-compare.png" style="display: flex; margin-top: auto; margin-left: auto; margin-right: auto; margin-bottom: auto; width: 50%;"></img>
-<p style="color:gray; text-align: center;">Figure 3. Response Comparison Assessed by GPT-4</p>
-
-Figure 3 displays the comparison results between all baselines and Vicuna. GPT-4 prefers Vicuna over state-of-the-art open-source models (LLaMA, Alpaca) in more than 90% of the questions, and it achieves competitive performance against proprietary models (ChatGPT, Bard). In 45% of the questions, GPT-4 rates Vicuna's response as better or equal to ChatGPT's.
-As GPT-4 assigns a quantitative score to each response on a scale of 10, we calculate the total score for each (baseline, Vicuna) comparison pair by adding up the scores obtained by each model on 80 questions. As shown in Table 2, Vicuna’s total score is 92% of ChatGPT’s. Despite recent advancements, these chatbots still face limitations, such as struggling with basic math problems or having limited coding ability.
-
-<p style="color:gray; text-align: center;">Table 2. Total Scores Assessed by GPT-4. </p>
-
-<table class="tg" style="display: flex;justify-content: center;">
-<tbody>
-  <tr>
-    <td class="tg-head"><span style="font-weight:bold;">Baseline</span></td>
-    <td class="tg-head"><span style="font-weight:bold;">Baseline Score</span></td>
-    <td class="tg-head"><span style="font-weight:bold;">Vicuna Score</span></td>
-  </tr>
-  <tr>
-    <td class="tg-body">LLaMA-13B</td>
-    <td class="tg-body" style="text-align: right">513.0</td>
-    <td class="tg-body" style="text-align: right"><span style="font-weight:bold;">694.0</span></td>
-  </tr>
-  <tr>
-    <td class="tg-body">Alpaca-13B</td>
-    <td class="tg-body" style="text-align: right">583.0</td>
-    <td class="tg-body" style="text-align: right"><span style="font-weight:bold;">704.0</span></td>
-  </tr>
-  <tr>
-    <td class="tg-body">Bard</td>
-    <td class="tg-body" style="text-align: right"><span style="font-weight:bold;">664.0</span></td>
-    <td class="tg-body" style="text-align: right">655.5</td>
-  </tr>
-  <tr>
-    <td class="tg-body">ChatGPT</td>
-    <td class="tg-body" style="text-align: right"><span style="font-weight:bold;">693.0</span></td>
-    <td class="tg-body" style="text-align: right">638.0</td>
-  </tr>
-</tbody>
-</table>
-<br>
-
-While this proposed evaluation framework demonstrates the potential for assessing chatbots, it is not yet a rigorous or mature approach, as large language models are prone to hallucinate. Developing a comprehensive, standardized evaluation system for chatbots remains an open question requiring further research.
+On the other hand, training reward model on GPT-4 preference data and testing on GPT-4-based scoring can create double layers of impact from Goodharting laws. First, GPT-4-based preference is a proxy of human preferences. Overoptimizing towards GPT-4 preference may harm the actual human preference. Second, the learned reward model is only a proxy of the GPT-4-based preference, thus overoptimizing the proxy reward predicted by the reward model can hurt the GPT-4 preference, which may in turn also hurt human preferences. How to better utilize synthetic preference data to mitigate the two layer Goodharting law, and how to evaluate the model without too much human involvement remains an open problem. 
 
 
 ## Limitations
-We have noticed that, similar to other large language models, Vicuna has certain limitations. For instance, it is not good at tasks involving reasoning or mathematics, and it may have limitations in accurately identifying itself or ensuring the factual accuracy of its outputs. Additionally, it has not been sufficiently optimized to guarantee safety or mitigate potential toxicity or bias. To address the safety concerns, we use the OpenAI [moderation](https://platform.openai.com/docs/guides/moderation/overview) API to filter out inappropriate user inputs in our online demo. Nonetheless, we anticipate that Vicuna can serve as an open starting point for future research to tackle these limitations.
+We have noticed that, similar to other small-sized LLMs, Starling-7B has certain limitations. For instance, it is not good at tasks involving reasoning or mathematics, and it may have limitations in accurately identifying itself or ensuring the factual accuracy of its outputs. The model is likely to be unsafe to jailbreaking prompts, since it is not explicitly trained on these. We also observe that in rare cases, the model may output verbose and unnecessary content. We are working to release a better checkpoint when exploring new reward training and policy training methods. We also call for the community to join us or collaborate with us to train better models with RLHF.
 
-## Release
-In our first release, we will share the training, serving, and evaluation code on a GitHub repo: [https://github.com/lm-sys/FastChat](https://github.com/lm-sys/FastChat).
-We also released the Vicuna-13B model [weights](https://github.com/lm-sys/FastChat#vicuna-weights).
-There is no plan to release the dataset. Join our [Discord](https://discord.gg/HSWAKCrnFx) server and follow our [Twitter](https://twitter.com/lmsysorg) to get the latest updates.
 
 
 ## Online Demo
-Try the Vicuna-13B demo [here](https://chat.lmsys.org)!
+Try the Starling-7B demo [here](https://chat.lmsys.org)!
 
 <!-- Add a video that automatically play -->
 <div>
@@ -200,17 +104,17 @@ The dataset, model and online demo is a research preview intended for non-commer
 
 
 ## Acknowledgment
-We would like to thank the lmsys org for their support of evaluation and online demo.  Xuecheng Li, and Tianyi Zhang from Stanford Alpaca team for their insightful discussion and feedback; Qirong Ho from MBZUAI for providing support on the serving cluster. Please check out a blog post from BAIR about a concurrent effort on their chatbot, [Koala](https://bair.berkeley.edu/blog/2023/04/03/koala/).
+We would like to thank the lmsys org for their support of evaluation and online demo. 
 
-**✉ Correspondence to:** Banghua Zhu (lianminzheng@gmail.com), Hao Zhang (sjtu.haozhang@gmail.com), or LMSYS (lmsys.org@gmail.com).
+**✉ Correspondence to:** Banghua Zhu (banghua@berkeley.edu).
 
 ## Citation
 ```
-@misc{vicuna2023,
-    title = {Vicuna: An Open-Source Chatbot Impressing GPT-4 with 90\%* ChatGPT Quality},
-    url = {https://lmsys.org/blog/2023-03-30-vicuna/},
-    author = {Chiang, Wei-Lin and Li, Zhuohan and Lin, Zi and Sheng, Ying and Wu, Zhanghao and Zhang, Hao and Zheng, Lianmin and Zhuang, Siyuan and Zhuang, Yonghao and Gonzalez, Joseph E. and Stoica, Ion and Xing, Eric P.},
-    month = {March},
+@misc{starling2023,
+    title = {title: "Starling-7B: Increasing LLM Helpfulness & Harmlessness with RLAIF},
+    url = {},
+    author = {Zhu, Banghua and Frick, Evan and Wu, Tianhao and Zhu, Hanlin and Jiao, Jiantao},
+    month = {November},
     year = {2023}
 }
 ```
