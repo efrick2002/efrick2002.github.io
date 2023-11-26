@@ -62,7 +62,7 @@ It's important to highlight that the model's preference ranking by GPT-4 does no
 
 ## Dataset Overview
 
-We present Nectar, the first high-quality 7-wise comparison dataset, generated through GPT-4-based ranking. The dataset's prompts are an amalgamation of diverse sources, including lmsys-chat-1M, ShareGPT, Antropic/hh, UltraFeedback, Evol-Instruct, and Flan. Responses are primarily derived from a variety of models, namely GPT-4, GPT-3.5-turbo, GPT-3.5-turbo-instruct, LLama-2-7B-chat, and Mistral-7B-Instruct, alongside other existing datasets and models.
+We present Nectar, the first high-quality 7-wise comparison dataset, generated through GPT-4-based ranking. The dataset's prompts are an amalgamation of diverse sources, including [lmsys-chat-1M](https://huggingface.co/datasets/lmsys/lmsys-chat-1m), [ShareGPT](https://sharegpt.com/), [Antropic/hh-rlhf](https://huggingface.co/datasets/Anthropic/hh-rlhf), [UltraFeedback](https://huggingface.co/datasets/openbmb/UltraFeedback), [Evol-Instruct](https://huggingface.co/datasets/WizardLM/WizardLM_evol_instruct_V2_196k), and [Flan](https://huggingface.co/datasets/SirNeural/flan_v2). Responses are primarily derived from a variety of models, namely GPT-4, GPT-3.5-turbo, GPT-3.5-turbo-instruct, [LLama-2-7B-chat](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf), and [Mistral-7B-Instruct](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.1), alongside other existing datasets and models.
 
 
 <img src="rlaif_dataset.png" style="width: 100%; margin-left: auto; margin-right: auto; margin-bottom: auto"></img> 
@@ -124,14 +124,14 @@ The dataset, model and online demo is a research preview intended for non-commer
 
 
 ## Acknowledgment
-We would like to thank the lmsys org for their support of evaluation and online demo. 
+We would like to thank the LMSYS Organization for their support of lmsys-chat-1M dataset, evaluation and online demo. 
 
 **✉ Correspondence to:** Banghua Zhu (banghua@berkeley.edu).
 
 ## Citation
 ```
 @misc{starling2023,
-    title = {title: "Starling-7B: Increasing LLM Helpfulness & Harmlessness with RLAIF},
+    title = {Starling-7B: Increasing LLM Helpfulness & Harmlessness with RLAIF},
     url = {},
     author = {Zhu, Banghua and Frick, Evan and Wu, Tianhao and Zhu, Hanlin and Jiao, Jiantao},
     month = {November},
