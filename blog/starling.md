@@ -98,6 +98,8 @@ Our trials with offline RL methods like [Direct Preference Optimization (DPO)](h
 
 We observed that the quality of the preference dataset and reward model significantly influence the results, more so than the policy tuning method itself. We encourage the development of better reward learning methods, and invite researchers and developers to contribute to better open-source preference dataset, and utilize our dataset for training and testing. We believe it's likely that our dataset Nectar can bring higher gain with a larger reward model and language model, according to the [scaling laws of the reward model](https://arxiv.org/abs/2210.10760).
 
+In our current implementation of online RL methods, we only unfreeze the last 4 layers of the model, aiming for faster training speed. The model is trained on 8 A100 GPUs with batch size 28 and 10k steps in total. In the future we plan to experiment with LoRA or full-parameter fine-tuning. This advancement could further enhance the overall quality of the model. More details about training and implementation will be soon released with the code and paper. 
+
 ### Evaluation of RLHF
 
 Evaluating RLHF algorithms presents unique challenges, particularly in discerning whether performance gains are due to imitation of the best demonstration policies in offline-RL-based methods or innovative extrapolations in online-RL-based methods. We advocate for testing RLHF algorithms on our dataset, starting with models already proficient in learning from demonstrations, like Openchat 3.5. The ultimate benchmark should be the creation of models that surpass the initial model in both GPT-4 and human preferences.
