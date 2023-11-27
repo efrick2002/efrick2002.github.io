@@ -5,7 +5,7 @@ date: "Nov 30, 2023"
 previewImg: starling.png
 ---
 
-Author: "Banghua Zhu * , Evan Frick * , Tianhao Wu * , Hanlin Zhu and Jiantao Jiao
+Author: Banghua Zhu * , Evan Frick * , Tianhao Wu * , Hanlin Zhu and Jiantao Jiao
 
 
 <img src="starling.png" style="width: 30%; margin-left: auto; margin-right: auto; margin-bottom: auto; display: block;"></img>
