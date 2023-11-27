@@ -77,7 +77,7 @@ The most challenging aspect of creating Nectar was mitigating the positional bia
 
 To address this, as shown in the second figure, we instructed GPT-4 to first conduct pairwise comparisons for all response pairs before compiling a 7-wise ranking. This approach moderately reduced the positional bias. We have also explored having GPT-4 score or judge each prompt individually before summarizing in a 7-wise ranking, but this method did not effectively diminish the bias.
 
-Further reduction of positional bias came with the introduction of a specific, and then a randomized, pairwise evaluation order, as demonstrated in the third and fourth figures, respectively. This approach proved most effective in counteracting positional bias, leading to the final methodology employed in curating the Nectar dataset.
+Further reduction of positional bias came with the introduction of a specific, and then a randomized, pairwise evaluation order, as demonstrated in the third and fourth figures, respectively. This approach proved most effective in counteracting positional bias, leading to the final methodology employed in curating the Nectar dataset. Further details regarding dataset preparation and analysis will be elaborated in our upcoming paper.
 
 We believe that Nectar will be a valuable resource for developers aiming to train more effective models using RLHF / RLAIF. It also offers high-quality responses for a diverse range of prompts, and can provide researchers with deeper insights into RLHF / RLAIF and the interplay between synthetic and human data.
 
@@ -95,7 +95,7 @@ Our reward model is fine-tuned from [Llama2-7B-Chat](https://huggingface.co/meta
 
 We selected [Openchat 3.5](https://huggingface.co/openchat/openchat_3.5) as the initial model for policy-finetuning, owing to its high MT Bench score (7.81). Our objective was to ascertain whether RLHF could enhance this score further. We experimented with three online RL methods: [Advantage-induced Policy Alignment (APA)](https://arxiv.org/abs/2306.02231), [Proximal Policy Optimization (PPO)](https://arxiv.org/abs/1707.06347), and [Pairwise Proximal Policy Optimization (P3O)](https://arxiv.org/abs/2310.00212). Despite the challenges in hyperparameter optimization for PPO, we found that, with optimal hyperparameter settings, these methods yielded comparably strong results. We ultimately selected a checkpoint from an APA run. 
 
-Our trials with offline RL methods like [Direct Preference Optimization (DPO)](https://arxiv.org/abs/2305.18290) showed no significant improvements over the SFT model Openchat 3.5. This is likely due to that Openchat 3.5 has already done C-RLFT, a different format of offline preference-based training. In the future, we envision a better language model fine-tuning procedure being using (conditional) offline RL including DPO or C-RLFT to leverage reward information to create a strong initial model, and further improve the helpfulness and harmlessness with reward training and online RL. 
+Our trials with offline RL methods like [Direct Preference Optimization (DPO)](https://arxiv.org/abs/2305.18290) showed no significant improvements over the initial model Openchat 3.5. This is likely due to that Openchat 3.5 has already done [Conditioned RL Fine-Tuning (C-RLFT)](https://arxiv.org/abs/2309.11235), a different format of offline preference-based training, and offline RL methods may not be as effective as online RL with a high-quality reward model. In the future, we envision a better language model fine-tuning procedure being using (conditional) offline RL including DPO or C-RLFT to leverage reward information to create a strong initial model, and further improve the helpfulness and harmlessness with reward training and online RL. 
 
 We observed that the quality of the preference dataset and reward model significantly influence the results, more so than the policy tuning method itself. We encourage the development of better reward learning methods, and invite researchers and developers to contribute to better open-source preference dataset, and utilize our dataset for training and testing. We believe it's likely that our dataset Nectar can bring higher gain with a larger reward model and language model, according to the [scaling laws of the reward model](https://arxiv.org/abs/2210.10760).
 
@@ -123,7 +123,7 @@ We would like to thank Wei-Lin Chiang from Berkeley for detailed feedback of the
 ## Citation
 ```
 @misc{starling2023,
-    title = {Starling-7B: Increasing LLM Helpfulness & Harmlessness with RLAIF},
+    title = {Starling-7B: Improving LLM Helpfulness & Harmlessness with RLAIF},
     url = {},
     author = {Zhu, Banghua and Frick, Evan and Wu, Tianhao and Zhu, Hanlin and Jiao, Jiantao},
     month = {November},
