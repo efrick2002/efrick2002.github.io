@@ -77,7 +77,7 @@ The most challenging aspect of creating Nectar was mitigating the positional bia
 
 To address this, as shown in the second figure, we instructed GPT-4 to first conduct pairwise comparisons for all response pairs before compiling a 7-wise ranking. This approach moderately reduced the positional bias. We have also explored having GPT-4 score or judge each prompt individually before summarizing in a 7-wise ranking, but this method did not effectively diminish the bias.
 
-Further reduction of positional bias came with the introduction of a specific, and then a randomized, tie-breaking order, as demonstrated in the third and fourth figures, respectively. This approach proved most effective in counteracting positional bias, leading to the final methodology employed in curating the Nectar dataset.
+Further reduction of positional bias came with the introduction of a specific, and then a randomized, tie-breaking order, as demonstrated in the third and fourth figures, respectively. This approach proved most effective in counteracting positional bias, leading to the final methodology employed in curating the Nectar dataset. Further details regarding dataset preparation and analysis will be elaborated in our upcoming paper.
 
 We believe that Nectar will be a valuable resource for developers aiming to train more effective models using RLHF / RLAIF. It also offers high-quality responses for a diverse range of prompts, and can provide researchers with deeper insights into RLHF / RLAIF and the interplay between synthetic and human data.
 
@@ -123,7 +123,7 @@ We would like to thank Wei-Lin Chiang from Berkeley for detailed feedback of the
 ## Citation
 ```
 @misc{starling2023,
-    title = {Starling-7B: Increasing LLM Helpfulness & Harmlessness with RLAIF},
+    title = {Starling-7B: Improving LLM Helpfulness & Harmlessness with RLAIF},
     url = {},
     author = {Zhu, Banghua and Frick, Evan and Wu, Tianhao and Zhu, Hanlin and Jiao, Jiantao},
     month = {November},
