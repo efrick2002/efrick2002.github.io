@@ -102,7 +102,7 @@ In our current implementation of online RL methods, we only unfreeze the last 4 
 
 ### Evaluation of RLHF
 
-Evaluating RLHF algorithms presents unique challenges, particularly in discerning whether performance gains are due to imitation of the best demonstration policies in offline-RL-based methods or innovative extrapolations in online-RL-based methods. We advocate for testing RLHF algorithms on our dataset, starting with models already proficient in learning from demonstrations, like Openchat 3.5. The ultimate benchmark should be the creation of models that surpass the initial model in both GPT-4 and human preferences.
+Evaluating RLHF algorithms presents unique challenges, particularly in discerning whether performance gains are due to imitation of the best demonstration policies in offline-RL-based methods or  extrapolations of new reward signal in online-RL-based methods. We advocate for testing RLHF algorithms on our dataset, starting with models already proficient in learning from demonstrations, like Openchat 3.5. The ultimate benchmark should be the creation of models that surpass the initial model in both GPT-4 and human preferences.
 
 However, training on GPT-4 preference data and evaluating against GPT-4-based scoring may invoke double layers of impact from Goodhart's laws. Over-optimization towards GPT-4 preferences could inadvertently harm actual human preferences. Similarly, the reward model, being a proxy for GPT-4 preference, might also misalign with GPT-4 preference itself when over-optimized. The challenge lies in effectively utilizing synthetic preference data to mitigate these issues and evaluating models with minimal human intervention.
 
