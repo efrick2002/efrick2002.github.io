@@ -115,7 +115,7 @@ The dataset, model and online demo is a research preview intended for non-commer
 
 
 ## Acknowledgment
-We would like to thank the LMSYS Organization for their support of lmsys-chat-1M dataset, evaluation and online demo. 
+We would like to thank the [LMSYS Organization](https://lmsys.org/) for their support of lmsys-chat-1M dataset, evaluation and online demo. We would like to thank the open source community for their efforts in providing the datasets and base models we used to develope the project, including but not limited to Anthropic, Llama, Mistral, Hugging Face H4, OpenChat, OpenBMB, Flan and ShareGPT.
 
 **✉ Correspondence to:** Banghua Zhu (banghua@berkeley.edu).
 
