@@ -1,44 +1,35 @@
-title: "My Personal Website"
-description: "A personal website built with Jekyll"
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://yourusername.github.io" # the base hostname & protocol for your site
+title: Your Website Title 
+description: >- 
+  Your website description.
+baseurl: "/" 
+url: "your-github-pages-url.github.io" # Replace with your GitHub Pages URL
+# Exclude from building
+exclude: ["Gemfile", "Gemfile.lock", "node_modules", "vendor/bundle/", "vendor/cache/"]
 
-# Theme settings
+# -------------------------------
+# Dark Mode & Font
+# -------------------------------
 theme: minima
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+      font: Courier New
+      darkmode: true # Enable dark mode
 
-# Enable dark mode
-minima:
-  skin: dark
-
-# Font settings
-sass:
-  style: compressed
-
-# Markdown settings
+# -------------------------------
+# Navigation from Markdown Headers
+# -------------------------------
 markdown: kramdown
 kramdown:
   input: GFM
-  auto_ids: true
+  auto_ids: true # Enable automatic IDs for headers
+  hard_wrap: false
 
-# Navigation bar settings
-nav:
-  - title: "Home"
-    url: "/"
-  - title: "Section 1"
-    url: "#section-1"
-  - title: "Section 2"
-    url: "#section-2"
-  - title: "Section 3"
-    url: "#section-3"
-
-# Exclude these files from the site
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - node_modules
-  - vendor
-
-# Plugins
 plugins:
-  - jekyll-sitemap
-  - jekyll-seo-tag
+  - jekyll-toc
+
+# Add a custom variable to track the TOC
+toc:
+  permalink: true
