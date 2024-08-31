@@ -1,35 +1,26 @@
-title: Your Website Title 
-description: >- 
-  Your website description.
-baseurl: "/" 
-url: "your-github-pages-url.github.io" # Replace with your GitHub Pages URL
-# Exclude from building
-exclude: ["Gemfile", "Gemfile.lock", "node_modules", "vendor/bundle/", "vendor/cache/"]
+# _config.yml
 
-# -------------------------------
-# Dark Mode & Font
-# -------------------------------
-theme: minima
-defaults:
-  - scope:
-      path: ""
-    values:
-      layout: default
-      font: Courier New
-      darkmode: true # Enable dark mode
+# General Configuration
+title: Your Website Title
+description: Your Website Description
+baseurl: "/"  # Set to your desired base URL if different from root
 
-# -------------------------------
-# Navigation from Markdown Headers
-# -------------------------------
-markdown: kramdown
-kramdown:
-  input: GFM
-  auto_ids: true # Enable automatic IDs for headers
-  hard_wrap: false
+# Navigation (Auto-generated from `index.md` headers)
+navigation:
+  - name: Home
+    url: "/"
+  # Jekyll will dynamically populate additional items based on `##` headers in index.md
+  #  Format: name: Header Text, url: "/#header-id" (replace "header-id" with actual IDs)
 
-plugins:
-  - jekyll-toc
+# Theme Configuration (Minimalistic Theme with Customization)
+theme: minimal  # Choose a Jekyll theme supporting header linking and dark mode (e.g., minima, hyde, etc.)
+highlight: pygments  # Syntax highlighting library (adjust if needed for your languages)
+markdown: kramdown # Markdown processor (ensure supports header IDs for linking)
 
-# Add a custom variable to track the TOC
-toc:
-  permalink: true
+# Dark Mode
+dark_mode: true
+dark_mode_stylesheets:
+  - theme/dark.css  # Assuming your chosen theme has a dedicated dark mode stylesheet
+
+# Typography
+font: 'Courier New, monospace'  # Set primary font
