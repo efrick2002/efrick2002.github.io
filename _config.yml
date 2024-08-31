@@ -1,26 +1,55 @@
-# _config.yml
+title: "Your Website Title"
+description: "A description of your website"
+baseurl: "" # The subpath of your site, e.g. /blog
+url: "" # The base hostname & protocol for your site
 
-# General Configuration
-title: Your Website Title
-description: Your Website Description
-baseurl: "/"  # Set to your desired base URL if different from root
+theme: minima # Use the minima theme as a base; you can customize further
 
-# Navigation (Auto-generated from `index.md` headers)
-navigation:
-  - name: Home
-    url: "/"
-  # Jekyll will dynamically populate additional items based on `##` headers in index.md
-  #  Format: name: Header Text, url: "/#header-id" (replace "header-id" with actual IDs)
+markdown: kramdown
+kramdown:
+  input: GFM
+  auto_ids: true # This automatically generates IDs for headers
 
-# Theme Configuration (Minimalistic Theme with Customization)
-theme: minimal  # Choose a Jekyll theme supporting header linking and dark mode (e.g., minima, hyde, etc.)
-highlight: pygments  # Syntax highlighting library (adjust if needed for your languages)
-markdown: kramdown # Markdown processor (ensure supports header IDs for linking)
+highlighter: rouge # To enable syntax highlighting
 
-# Dark Mode
-dark_mode: true
-dark_mode_stylesheets:
-  - theme/dark.css  # Assuming your chosen theme has a dedicated dark mode stylesheet
+# Enable Dark Mode
+minima:
+  skin: dark
 
-# Typography
-font: 'Courier New, monospace'  # Set primary font
+# Custom CSS to apply Courier New font and adjust the navbar
+sass:
+  style: compressed
+
+plugins:
+  - jekyll-toc # Table of Contents generator
+
+# Table of Contents settings
+toc:
+  min_level: 2 # Include h2 headers (## in markdown)
+  max_level: 2 # Limit to h2 headers
+  no_back_to_top: true # Remove "back to top" link
+
+# Additional CSS
+sass:
+  style: compressed
+  custom_css: assets/css/custom.scss
+
+# Exclude items from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+# Optional: Specify where your site's content lives (default is in '_posts')
+# defaults:
+#   - scope:
+#       path: "" # empty string means all files
+#     values:
+#       layout: "default"
+
+# Optional: Customize the HTML output (e.g., to add classes, IDs, etc.)
+# markdown_ext: "markdown,mkdown,mkdn,mkd,md"
