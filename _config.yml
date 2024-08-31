@@ -32,6 +32,41 @@ theme: minima
 plugins:
   - jekyll-feed
 
+# Build settings
+markdown: kramdown
+remote_theme: jekyll/minima
+
+# Minima theme settings
+minima:
+  skin: dark
+  
+# Custom CSS
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Navigation
+header_pages:
+  - index.md
+
+# Custom variables
+font_family: "Courier New, monospace"
+
+# Plugins
+plugins:
+  - jekyll-seo-tag
+  - jekyll-feed
+
+# Exclude files from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
