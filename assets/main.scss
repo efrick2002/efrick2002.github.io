@@ -1,3 +1,22 @@
+---
+# Front matter to ensure Jekyll processes this file
+---
+
 @import "minima";
 
-{{ site.custom_css }}
+body {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.navbar {
+  background-color: #333;
+  color: #fff;
+}
+
+.navbar a {
+  color: #fff;
+}
+
+.navbar a:hover {
+  color: #ddd;
+}
