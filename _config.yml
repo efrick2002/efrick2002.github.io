@@ -40,10 +40,10 @@ remote_theme: jekyll/minima
 minima:
   skin: dark
   
-# Custom CSS
-sass:
-  sass_dir: _sass
-  style: compressed
+# # Custom CSS
+# sass:
+#   sass_dir: _sass
+#   style: compressed
 
 # Navigation
 header_pages:
